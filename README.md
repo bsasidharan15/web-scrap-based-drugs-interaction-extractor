@@ -11,32 +11,6 @@ A Python-based tool for extracting drug interaction data from Drugs.com using we
 - 📦 CSV input/output for easy data handling
 - 🧩 Modular and extensible codebase
 
-## Project Structure
-
-```
-drug-interaction-extractor/
-├── README.md
-├── requirements.txt
-├── src/
-│   ├── scraper.py
-│   ├── utils.py
-│   └── main.py
-├── data/
-│   ├── input/
-│   │   └── updated_drug_data.csv
-│   ├── output/
-│   │   ├── drug_interactions.csv
-│   │   └── selected_drug_ids.csv
-│   └── logs/
-│       └── scraper.log
-├── config/
-│   └── .env.example
-└── tests/
-    ├── __init__.py
-    ├── test_scraper.py
-    └── test_utils.py
-```
-
 ## Installation
 
 1. Clone the repository:
