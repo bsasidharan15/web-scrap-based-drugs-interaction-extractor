@@ -1,17 +1,16 @@
-
-# 🧪 Web Scraping-Based Drug Interaction Extractor 💊
+# 🚀 Web Scraping-Based Drug Interaction Extractor 💊
 
 A Python-based tool for extracting drug interaction data from Drugs.com using web scraping. This tool supports multiprocessing for efficient batch processing and includes checkpointing to resume interrupted tasks.
 
-## Features
+## 🌟 Features
 
-- 🕸️ Web scraping for drug interaction data
-- 🔄 Checkpointing to resume interrupted tasks
-- 🚀 Multiprocessing for efficient batch processing
-- 📦 CSV input/output for easy data handling
-- 🧩 Modular and extensible codebase
+- 🕸️ **Web Scraping**: Extracts drug interaction data from Drugs.com.
+- 🔄 **Checkpointing**: Saves progress to allow resuming from the last processed point.
+- 🚀 **Multiprocessing**: Utilizes CPU cores for faster processing.
+- 📦 **CSV Input/Output**: Easy handling of large datasets.
+- 🧩 **Modular Design**: Well-structured functions for extensibility.
 
-## Installation
+## 📥 Installation
 
 1. Clone the repository:
    ```bash
@@ -24,150 +23,112 @@ A Python-based tool for extracting drug interaction data from Drugs.com using we
    pip install -r requirements.txt
    ```
 
-3. Set up environment variables:
-   - Copy the `.env.example` file to `.env`:
-     ```bash
-     cp config/.env.example .env
-     ```
-   - Update the `.env` file with any required credentials or configurations.
+## ⚡ Usage
 
-## Usage
+### 📑 Input Data Format
 
-### Input Data Format
+The input CSV file should contain the following columns:
 
-Ensure your input CSV file (`updated_drug_data.csv`) is in the following format:
+| 🆔 Unique ID | 💊 Drug Name | 🏷️ Drug ID |
+|-------------|-------------|-----------|
+| 1           | Drug A      | 1234      |
+| 2           | Drug B      | 5678      |
+| ...         | ...         | ...       |
 
-| Drug Name                     | Drug ID       |
-|-------------------------------|---------------|
-| 5-hydroxytryptophan/melatonin/pyridoxine | 4479-0        |
-| A-Methapred                   | 1607-1956     |
-| A-Phedrin                     | 1966-7245     |
-| ACT Fluoride Rinse            | 1110-10594    |
+### ▶️ Running the Script
 
-### Running the Script
-
-1. Navigate to the `src` directory:
-   ```bash
-   cd src
-   ```
-
-2. Run the main script:
-   ```bash
-   python main.py
-   ```
-
-   By default, the script will:
-   - Read drug data from `data/input/updated_drug_data.csv`.
-   - Write interaction data to `data/output/drug_interactions.csv`.
-   - Save checkpoint data to `data/output/selected_drug_ids.csv`.
-
-3. (Optional) Customize file paths:
-   You can modify the file paths in `main.py` to use custom input/output locations.
-
-## Configuration
-
-### Environment Variables
-
-Create a `.env` file in the `config` directory with the following variables (if needed):
-
-```
-# Example environment variables
-LOG_LEVEL=INFO
-REQUEST_TIMEOUT=10
-MAX_RETRIES=3
+Execute the main script:
+```bash
+python main.py
 ```
 
-### Logging
+The script will:
+- 📥 Read drug data from the input CSV file.
+- 🔄 Process all possible drug pairs.
+- 📤 Save interaction data in an output CSV file.
+- 📌 Maintain a checkpoint file to track processed pairs.
 
-Logs are saved to `data/logs/scraper.log`. You can adjust the logging level in the `.env` file.
+### ⚙️ Customizing File Paths
 
-## API Reference
+Modify `main.py` to set custom file paths for:
+- 📂 `input_csv`: Input drug data file.
+- 📂 `output_csv`: Output file storing interactions.
+- 📂 `checkpoint_csv`: Checkpoint file for tracking progress.
 
-### `extract_interactions(drug1, drug2)`
+## 🛠️ Code Breakdown
 
-Extracts interaction data for a pair of drugs.
+### 1️⃣ Load and Save Processed Pairs
 
-#### Parameters
-- `drug1`: A dictionary containing `drug_name`, `drug_id`, and `unique_id` for the first drug.
-- `drug2`: A dictionary containing `drug_name`, `drug_id`, and `unique_id` for the second drug.
+- **`load_processed_pairs(checkpoint_csv)`** 📝
+  - Reads previously processed drug pairs from the checkpoint file.
+  - Ensures that already processed pairs are skipped.
 
-#### Returns
-A dictionary containing:
-- `interaction_level`: The severity of the interaction (`Major`, `Moderate`, `Minor`, or `Unknown`).
-- `drugs_involved`: The names of the drugs involved.
-- `description`: A description of the interaction.
+- **`save_processed_pairs(processed_pairs, checkpoint_csv)`** 💾
+  - Writes updated processed pairs to the checkpoint file.
 
-### `process_drug_pair(pair, output_csv, processed_pairs, checkpoint_csv)`
+### 2️⃣ Extract Drug Interactions
 
-Processes a single drug pair and writes the interaction data to the output CSV.
+- **`extract_interactions(drug1, drug2)`** 🔬
+  - Scrapes interaction data from Drugs.com.
+  - Parses the severity level (`Major`, `Moderate`, `Minor`).
+  - ❌ Ignores food interactions.
+  - ✅ Returns interaction details if found.
 
-#### Parameters
-- `pair`: A tuple containing two drug dictionaries.
-- `output_csv`: The path to the output CSV file.
-- `processed_pairs`: A list of already processed drug pairs.
-- `checkpoint_csv`: The path to the checkpoint CSV file.
+### 3️⃣ Process Drug Pairs
 
-### `create_interactions_csv(input_csv, output_csv, checkpoint_csv)`
+- **`process_drug_pair(pair, output_csv, processed_pairs, checkpoint_csv)`** 🔄
+  - Checks if a drug pair was already processed.
+  - Calls `extract_interactions()` to retrieve data.
+  - 📤 Writes results to the output CSV if interactions exist.
+  - ✅ Updates the checkpoint file.
 
-Main function to create the interactions CSV.
+### 4️⃣ Multiprocessing Execution
 
-#### Parameters
-- `input_csv`: The path to the input CSV file containing drug data.
-- `output_csv`: The path to the output CSV file for interaction data.
-- `checkpoint_csv`: The path to the checkpoint CSV file.
+- **`create_interactions_csv(input_csv, output_csv, checkpoint_csv)`** ⚡
+  - 📥 Loads drug data from CSV.
+  - 🔄 Generates all possible drug combinations.
+  - 🚀 Uses multiprocessing to process pairs efficiently.
+  - 📌 Saves progress to a checkpoint file.
 
-## Examples
+## 🔍 Example
 
-### Analyzing Drug Interactions
+### 🧐 Extracting Interactions for a Pair of Drugs
 
 ```python
-from src.scraper import extract_interactions
+from scraper import extract_interactions
 
-drug1 = {
-    "drug_name": "A-Methapred",
-    "drug_id": "1607-1956",
-    "unique_id": "1"
-}
-
-drug2 = {
-    "drug_name": "A-Phedrin",
-    "drug_id": "1966-7245",
-    "unique_id": "2"
-}
+drug1 = {"drug_name": "Drug A", "drug_id": "1234", "unique_id": "1"}
+drug2 = {"drug_name": "Drug B", "drug_id": "5678", "unique_id": "2"}
 
 interaction_data = extract_interactions(drug1, drug2)
 print(interaction_data)
 ```
 
-### Batch Processing
+### 📊 Batch Processing All Drug Pairs
 
 ```python
-from src.main import create_interactions_csv
+from main import create_interactions_csv
 
-input_csv = "data/input/updated_drug_data.csv"
-output_csv = "data/output/drug_interactions.csv"
-checkpoint_csv = "data/output/selected_drug_ids.csv"
+input_csv = "input.csv"
+output_csv = "output.csv"
+checkpoint_csv = "checkpoint.csv"
 
 create_interactions_csv(input_csv, output_csv, checkpoint_csv)
 ```
 
-## Contributing
+## 🤝 Contributing
 
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/YourFeature`).
-3. Commit your changes (`git commit -m 'Add some feature'`).
-4. Push to the branch (`git push origin feature/YourFeature`).
-5. Open a pull request.
+1. 🍴 Fork the repository.
+2. 🌱 Create a new branch (`git checkout -b feature/YourFeature`).
+3. 📝 Commit your changes (`git commit -m 'Add new feature'`).
+4. 📤 Push to the branch (`git push origin feature/YourFeature`).
+5. 🔄 Open a pull request.
 
-## License
+## 📜 License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
 
-## Author
+## 🙏 Acknowledgments
 
-Sasidharan B
-
-## Acknowledgments
-
-- Thanks to [Drugs.com](https://www.drugs.com) for providing drug interaction data.
-- Built with Python, `requests`, and `lxml`.
+- 🎉 Thanks to [Drugs.com](https://www.drugs.com) for providing drug interaction data.
+- 🐍 Built with Python, `requests`, and `lxml`.
