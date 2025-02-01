@@ -18,7 +18,6 @@ drug-interaction-extractor/
 ├── README.md
 ├── requirements.txt
 ├── src/
-│   ├── __init__.py
 │   ├── scraper.py
 │   ├── utils.py
 │   └── main.py
